@@ -20,6 +20,10 @@ unsigned long Atuador::getTempoDecorrido(unsigned long tempoAtual) {
     return tempoAtual - this->tempoAntigo;
 }
 
+void Atuador::atualizaTempo(unsigned long tempoAtual){
+    this->setTempoAntigo(tempoAtual);
+}
+
 void Atuador::setIntervalo(unsigned long intervalo) {
     this->intervalo = intervalo;
 }

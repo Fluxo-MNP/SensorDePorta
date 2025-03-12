@@ -7,33 +7,32 @@
 #include "VT.h"
 
 // Definição dos pinos
-#define pino_mosfet 3      // PB5
-#define pino_led_laranja 5 // PC3
-#define pino_led_amarelo 9 // PC7
-#define pino_led_azul 11   // PD2
-#define pino_buzzer 12     // PD3
-#define pino_VT 7          // PC5
-#define pino_toque 8       // PC6 sensor
+#define pinMosfet 6      // PB5
+#define pinLedLaranja 1 // PC3
+#define pinLedBranco 2 // PC7
+#define pinLedAzul 0   // PD2
+#define pinBuzzer 5     // PD3
+#define pinValidTransmittion 3          // PC5
+#define pinSensorToque 4       // PC6 sensor
 
 // Instâncias das classes
-Leds ledLaranja(pino_led_laranja);
-Leds ledAmarelo(pino_led_amarelo);
-Leds ledAzul(pino_led_azul);
-Buzzer buzzer(pino_buzzer);
-Contatora mosfet(pino_mosfet);
-ValidTransmittion vt(pino_VT);
-Entradas sensorToque(pino_toque);
+Leds ledLaranja(pinLedLaranja);
+Leds ledBranco(pinLedBranco);
+Leds ledAzul(pinLedAzul);
+Buzzer buzzer(pinBuzzer);
+Contatora mosfet(pinMosfet);
+ValidTransmittion vt(pinValidTransmittion);
+Entradas sensorToque(pinSensorToque);
 
 // Variáveis de controle
 unsigned long tempoAntigo = 0;                // contador geral
 unsigned long tempoAntigoBuzzer = 0;          // contador do buzzer
-unsigned long tempoAntigoLedAmarelo = 0;      // contador do led amarelo
+unsigned long tempoAntigoledBranco = 0;      // contador do led branco
 unsigned long tempoAntigoLedsLaranjaAzul = 0; // contador dos leds laranja e azul
 bool estaContando = false;                    // variável que verifica se a contagem está acontecendo
 
 void setup()
 {
-    // Inicializações já feitas nos construtores das classes
 }
 
 void loop()
@@ -45,7 +44,7 @@ void loop()
     {
         buzzer.ligarAtuador(tempoAtual); // Liga o buzzer imediatamente
         tempoAntigo = tempoAtual;
-        tempoAntigoLedAmarelo = tempoAtual;
+        ledBranco.atualizaTempo(tempoAtual);
         estaContando = true;
     }
 
@@ -56,16 +55,17 @@ void loop()
         {
             ledLaranja.ligarAtuador(tempoAtual); // Liga o LED laranja
             mosfet.ligarAtuador(tempoAtual);     // Liga o MOSFET
-            tempoAntigoLedsLaranjaAzul = tempoAtual;
+            ledLaranja.atualizaTempo(tempoAtual);
+            ledAzul.atualizaTempo(tempoAtual);
             estaContando = false;
         }
 
-        // Controla o LED amarelo (pisca a cada 700ms)
-        if (tempoAtual - tempoAntigoLedAmarelo >= 700)
+        // Controla o LED branco (pisca a cada 700ms)
+        if (tempoAtual - tempoAntigoledBranco >= 700)
         {
-            ledAmarelo.setIntervalo(700); // Define o intervalo de piscagem
-            ledAmarelo.ligarAtuador(tempoAtual);
-            tempoAntigoLedAmarelo = tempoAtual;
+            ledBranco.setIntervalo(700); // Define o intervalo de piscagem
+            ledBranco.ligarAtuador(tempoAtual);
+            ledBranco.atualizaTempo(tempoAtual);
         }
 
         // Desliga tudo após 12 segundos se o sensor não for tocado
@@ -73,7 +73,8 @@ void loop()
         {
             ledAzul.ligarAtuador(tempoAtual);   // Liga o LED azul
             mosfet.desligarAtuador(tempoAtual); // Desliga o MOSFET
-            tempoAntigoLedsLaranjaAzul = tempoAtual;
+            ledLaranja.atualizaTempo(tempoAtual);
+            ledAzul.atualizaTempo(tempoAtual);
             estaContando = false;
         }
 
@@ -82,22 +83,22 @@ void loop()
         {
             buzzer.setIntervalo(5000); // Define o intervalo do buzzer
             buzzer.ligarAtuador(tempoAtual);
-            tempoAntigoBuzzer = tempoAtual;
+            buzzer.atualizaTempo(tempoAtual);
         }
     }
 
-    // Desliga o LED amarelo após 300ms
-    if (tempoAtual - tempoAntigoLedAmarelo >= 300 && ledAmarelo.getEstado() == HIGH)
+    // Desliga o LED branco após 300ms
+    if (tempoAtual - tempoAntigoledBranco >= 300 && ledBranco.getEstado() == HIGH)
     {
-        ledAmarelo.desligarAtuador(tempoAtual);
-        tempoAntigoLedAmarelo = tempoAtual;
+        ledBranco.desligarAtuador(tempoAtual);
+        ledBranco.atualizaTempo(tempoAtual);
     }
 
     // Desliga o buzzer após 300ms
     if (tempoAtual - tempoAntigoBuzzer >= 300 && buzzer.getEstado() == HIGH)
     {
         buzzer.desligarAtuador(tempoAtual);
-        tempoAntigoBuzzer = tempoAtual;
+        buzzer.atualizaTempo(tempoAtual);
     }
 
     // Desliga os LEDs laranja e azul após 3 segundos

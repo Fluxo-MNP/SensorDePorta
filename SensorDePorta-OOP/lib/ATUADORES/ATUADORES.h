@@ -21,10 +21,13 @@ public:
     // Métodos de controle de tempo
     void setTempoAntigo(unsigned long tempoAntigo);
     unsigned long getTempoDecorrido(unsigned long tempoAtual);
+    void atualizaTempo(unsigned long tempoAtual);
 
     // Métodos para definir e obter o intervalo
     void setIntervalo(unsigned long intervalo);
     unsigned long getIntervalo();
+
+
 };
 
 #endif
