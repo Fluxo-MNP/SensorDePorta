@@ -4,4 +4,5 @@
 
 ValidTransmittion::ValidTransmittion(int pino):Entradas(pino){
     this->estado = 0;
+    digitalWrite(this->pino, LOW);
 }

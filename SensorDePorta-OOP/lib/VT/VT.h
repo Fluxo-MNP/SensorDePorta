@@ -8,7 +8,7 @@ class ValidTransmittion : public Entradas
     public:
     
         ValidTransmittion(int pino);
-        void setEstado(int estado);
+        void setEstado(bool estado);
 
 };
 
