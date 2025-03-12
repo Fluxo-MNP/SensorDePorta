@@ -2,8 +2,6 @@
 #include "comandos.h"
 #include "tempo.h"
 
-bool estaContando = false;
-
 void setup()
 {
   pinMode(PinoContatora, OUTPUT);
@@ -22,25 +20,17 @@ void setup()
 
 void loop()
 {
-
+  estaContando = false;
   tempoAtual = millis();
   estaContando = VerificarRecepcaoSinal(tempoAtual, estaContando);
+  bool leituraDigitalPinoToque = digitalRead(PinoSensorDeToque);
 
   if (estaContando)
   {
-    if (digitalRead(PinoSensorDeToque) == HIGH)
-    {
-      digitalWrite(PinoLedLaranja, HIGH); // aciona led laranja e liga o disjuntor se o sensor ativar
-      digitalWrite(PinoContatora, HIGH);  // liga disjuntor
-      tempoAntigoLedsLaranjaAzul = tempoAtual;
-      estaContando = false;
-    }
 
-    if (tempoAtual - tempoAntigoLedBranco >= 700)
-    {
-      digitalWrite(PinoLedBranco, HIGH); // aciona led Branco a cada 1 segundo
-      tempoAntigoLedBranco = tempoAtual;
-    }
+    AcionarDisjuntor(leituraDigitalPinoToque);
+    
+    AcionarDispositivos(tempoAntigoLedBranco, 700, PinoLedBranco);
 
     if (tempoAtual - tempoAntigo >= 12000)
     {
@@ -49,25 +39,10 @@ void loop()
       tempoAntigoLedsLaranjaAzul = tempoAtual;
       estaContando = false;
     }
-
-    if (tempoAtual - tempoAntigoBuzzer >= 5000)
-    {
-      digitalWrite(PinoBuzzer, HIGH);
-      tempoAntigoBuzzer = tempoAtual;
-    }
+    AcionarDispositivos(tempoAntigoBuzzer, 5000, PinoBuzzer);
   }
-
-  if (tempoAtual - tempoAntigoLedBranco >= 300 && digitalRead(PinoLedBranco) == HIGH)
-  {
-    digitalWrite(PinoLedBranco, LOW);
-    tempoAntigoLedBranco = tempoAtual;
-  }
-
-  if (tempoAtual - tempoAntigoBuzzer >= 300 && digitalRead(PinoBuzzer) == HIGH)
-  {
-    digitalWrite(PinoBuzzer, LOW);
-    tempoAntigoBuzzer = tempoAtual;
-  }
+  DesligarDispositivos(tempoAntigoLedBranco, PinoLedBranco);
+  DesligarDispositivos(tempoAntigoBuzzer, PinoBuzzer);
 
   if (tempoAtual - tempoAntigoLedsLaranjaAzul >= 3000)
   {
