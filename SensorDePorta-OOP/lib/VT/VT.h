@@ -1,7 +1,7 @@
 #ifndef VT_H
 #define VT_H
 
-#include "ENTRADA.h"
+#include "ENTRADAS.h"
 
 class ValidTransmittion : public Entradas {
 public:

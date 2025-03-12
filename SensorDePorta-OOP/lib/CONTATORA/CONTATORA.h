@@ -7,7 +7,6 @@
 class Contatora : public Atuador {
 public:
     Contatora(int pino);
-
     void ligarAtuador(unsigned long tempoAtual) override;
     void desligarAtuador(unsigned long tempoAtual) override;
 };

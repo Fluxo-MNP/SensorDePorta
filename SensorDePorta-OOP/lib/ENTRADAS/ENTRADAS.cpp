@@ -1,4 +1,5 @@
-#include "ENTRADA.h"
+#include "ENTRADAS.h"
+#include <Arduino.h>
 
 Entradas::Entradas(int pino) {
     this->pino = pino;

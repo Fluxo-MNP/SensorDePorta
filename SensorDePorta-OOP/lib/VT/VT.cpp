@@ -1,4 +1,5 @@
 #include "VT.h"
+#include <Arduino.h>
 
 ValidTransmittion::ValidTransmittion(int pino) : Entradas(pino) {
     this->estado = LOW;
