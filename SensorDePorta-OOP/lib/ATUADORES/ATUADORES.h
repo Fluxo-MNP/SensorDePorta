@@ -2,13 +2,13 @@
 #define ATUADORES_H
 
 #include <Arduino.h>
-
-class Atuador {
+class Atuador
+{
 protected:
     int pino;
     bool estado;
     unsigned long tempoAntigo; // Tempo antigo para controle de intervalo
-    unsigned long intervalo;  // Intervalo de tempo para controle
+    unsigned long intervalo;   // Intervalo de tempo para controle
 
 public:
     Atuador(int pino);
@@ -21,13 +21,11 @@ public:
     // Métodos de controle de tempo
     void setTempoAntigo(unsigned long tempoAntigo);
     unsigned long getTempoDecorrido(unsigned long tempoAtual);
-    void atualizaTempo(unsigned long tempoAtual);
 
     // Métodos para definir e obter o intervalo
     void setIntervalo(unsigned long intervalo);
     unsigned long getIntervalo();
-
-
 };
+
 
 #endif

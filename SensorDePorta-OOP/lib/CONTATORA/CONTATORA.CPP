@@ -1,15 +1,18 @@
 #include "CONTATORA.h"
 
-Contatora::Contatora(int pino) : Atuador(pino) {
+Contatora::Contatora(int pino) : Atuador(pino)
+{
     // Inicializações, se necessário
 }
 
-void Contatora::ligarAtuador(unsigned long tempoAtual) {
+void Contatora::ligarAtuador(unsigned long tempoAtual)
+{
     this->estado = HIGH;
     digitalWrite(this->pino, this->estado);
 }
 
-void Contatora::desligarAtuador(unsigned long tempoAtual) {
+void Contatora::desligarAtuador(unsigned long tempoAtual)
+{
     this->estado = LOW;
     digitalWrite(this->pino, this->estado);
 }

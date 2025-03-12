@@ -4,7 +4,8 @@
 #include <Arduino.h>
 #include "ATUADORES.h"
 
-class Contatora : public Atuador {
+class Contatora : public Atuador
+{
 public:
     Contatora(int pino);
     void ligarAtuador(unsigned long tempoAtual) override;

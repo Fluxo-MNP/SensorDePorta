@@ -1,10 +1,9 @@
 #ifndef LEDS_H
 #define LEDS_H
 
-#include <Arduino.h>
 #include "ATUADORES.h"
-
-class Leds : public Atuador {
+class Leds : public Atuador
+{
 public:
     Leds(int pino);
 

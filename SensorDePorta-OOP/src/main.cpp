@@ -4,16 +4,15 @@
 #include "BUZZER.h"
 #include "CONTATORA.h"
 #include "ENTRADAS.h"
-#include "VT.h"
 
 // Definição dos pinos
-#define pinMosfet 6      // PB5
-#define pinLedLaranja 1 // PC3
-#define pinLedBranco 2 // PC7
-#define pinLedAzul 0   // PD2
-#define pinBuzzer 5     // PD3
-#define pinValidTransmittion 3          // PC5
-#define pinSensorToque 4       // PC6 sensor
+#define pinMosfet 6      
+#define pinLedLaranja 1 
+#define pinLedBranco 2 
+#define pinLedAzul 0   
+#define pinBuzzer 5    
+#define pinValidTransmittion 3         
+#define pinSensorToque 4    
 
 // Instâncias das classes
 Leds ledLaranja(pinLedLaranja);
@@ -21,31 +20,40 @@ Leds ledBranco(pinLedBranco);
 Leds ledAzul(pinLedAzul);
 Buzzer buzzer(pinBuzzer);
 Contatora mosfet(pinMosfet);
-ValidTransmittion vt(pinValidTransmittion);
+Entradas vt(pinValidTransmittion);
 Entradas sensorToque(pinSensorToque);
 
 // Variáveis de controle
 unsigned long tempoAntigo = 0;                // contador geral
 unsigned long tempoAntigoBuzzer = 0;          // contador do buzzer
-unsigned long tempoAntigoledBranco = 0;      // contador do led branco
-unsigned long tempoAntigoLedsLaranjaAzul = 0; // contador dos leds laranja e azul
+unsigned long tempoAntigoLedBranco = 0;       // contador do LED branco
+unsigned long tempoAntigoLedAzul = 0;         // contador do LED azul
+unsigned long tempoAntigoLedLaranja = 0;      // contador do LED laranja
 bool estaContando = false;                    // variável que verifica se a contagem está acontecendo
+bool placaFoiTocada = false;                   // variável que verifica se a contagem está acontecendo
 
 void setup()
 {
+    Serial.begin(9600);
+    ledLaranja.desligarAtuador(millis());
+    ledBranco.desligarAtuador(millis());
+    ledAzul.desligarAtuador(millis());
 }
 
 void loop()
-{
-    unsigned long tempoAtual = millis();
+{    unsigned long tempoAtual = millis();
 
     // Verifica se o sinal VT foi recebido e inicia a contagem
     if (vt.getEstado() == HIGH && !estaContando)
     {
         buzzer.ligarAtuador(tempoAtual); // Liga o buzzer imediatamente
+        ledBranco.ligarAtuador(tempoAtual); // Liga o LED branco
+        ledAzul.ligarAtuador(tempoAtual); // Liga o LED azul
         tempoAntigo = tempoAtual;
-        ledBranco.atualizaTempo(tempoAtual);
+        tempoAntigoLedBranco = tempoAtual;
+        tempoAntigoLedAzul = tempoAtual; // Inicia o contador do LED azul
         estaContando = true;
+        placaFoiTocada = false; // Reseta o estado do toque
     }
 
     if (estaContando)
@@ -53,29 +61,41 @@ void loop()
         // Verifica se o sensor de toque foi ativado
         if (sensorToque.getEstado() == HIGH)
         {
-            ledLaranja.ligarAtuador(tempoAtual); // Liga o LED laranja
-            mosfet.ligarAtuador(tempoAtual);     // Liga o MOSFET
-            ledLaranja.atualizaTempo(tempoAtual);
-            ledAzul.atualizaTempo(tempoAtual);
+            placaFoiTocada = true;
+            ledBranco.desligarAtuador(tempoAtual); // Desliga o LED branco
+            ledLaranja.desligarAtuador(tempoAtual); // Desliga o LED laranja
+            mosfet.ligarAtuador(tempoAtual); // Liga o MOSFET
             estaContando = false;
         }
 
-        // Controla o LED branco (pisca a cada 700ms)
-        if (tempoAtual - tempoAntigoledBranco >= 700)
+        // Desliga o LED azul após 3 segundos
+        if (tempoAtual - tempoAntigoLedAzul >= 3000)
         {
-            ledBranco.setIntervalo(700); // Define o intervalo de piscagem
-            ledBranco.ligarAtuador(tempoAtual);
-            ledBranco.atualizaTempo(tempoAtual);
+            ledAzul.desligarAtuador(tempoAtual);
         }
 
-        // Desliga tudo após 12 segundos se o sensor não for tocado
-        if (tempoAtual - tempoAntigo >= 12000)
+        // Verifica se passou 1 minuto (60000 ms) e a placa não foi tocada
+        if (tempoAtual - tempoAntigo >= 60000 && !placaFoiTocada)
         {
-            ledAzul.ligarAtuador(tempoAtual);   // Liga o LED azul
-            mosfet.desligarAtuador(tempoAtual); // Desliga o MOSFET
-            ledLaranja.atualizaTempo(tempoAtual);
-            ledAzul.atualizaTempo(tempoAtual);
-            estaContando = false;
+            // Pisca o LED laranja uma vez por segundo durante 10 segundos
+            if (tempoAtual - tempoAntigoLedLaranja >= 1000)
+            {
+                ledLaranja.ligarAtuador(tempoAtual);
+                tempoAntigoLedLaranja = tempoAtual;
+            }
+
+            // Desliga o LED laranja após 500ms (para criar o efeito de piscar)
+            if (tempoAtual - tempoAntigoLedLaranja >= 500 && ledLaranja.getEstado() == HIGH)
+            {
+                ledLaranja.desligarAtuador(tempoAtual);
+            }
+
+            // Verifica se passaram 10 segundos desde o início da piscada
+            if (tempoAtual - tempoAntigo >= 70000) // 60000 + 10000
+            {
+                ledLaranja.desligarAtuador(tempoAtual); // Desliga o LED laranja
+                estaContando = false; // Finaliza a contagem
+            }
         }
 
         // Controla o buzzer (liga/desliga a cada 5 segundos)
@@ -83,29 +103,15 @@ void loop()
         {
             buzzer.setIntervalo(5000); // Define o intervalo do buzzer
             buzzer.ligarAtuador(tempoAtual);
-            buzzer.atualizaTempo(tempoAtual);
+            tempoAntigoBuzzer = tempoAtual;
         }
-    }
-
-    // Desliga o LED branco após 300ms
-    if (tempoAtual - tempoAntigoledBranco >= 300 && ledBranco.getEstado() == HIGH)
-    {
-        ledBranco.desligarAtuador(tempoAtual);
-        ledBranco.atualizaTempo(tempoAtual);
     }
 
     // Desliga o buzzer após 300ms
     if (tempoAtual - tempoAntigoBuzzer >= 300 && buzzer.getEstado() == HIGH)
     {
         buzzer.desligarAtuador(tempoAtual);
-        buzzer.atualizaTempo(tempoAtual);
-    }
-
-    // Desliga os LEDs laranja e azul após 3 segundos
-    if (tempoAtual - tempoAntigoLedsLaranjaAzul >= 3000)
-    {
-        ledLaranja.desligarAtuador(tempoAtual);
-        ledAzul.desligarAtuador(tempoAtual);
+        tempoAntigoBuzzer = tempoAtual;
     }
 
     delay(50);
