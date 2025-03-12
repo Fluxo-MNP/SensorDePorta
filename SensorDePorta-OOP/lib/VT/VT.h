@@ -3,13 +3,10 @@
 
 #include "ENTRADA.h"
 
-class ValidTransmittion : public Entradas
-{
-    public:
-    
-        ValidTransmittion(int pino);
-        void setEstado(bool estado);
-
+class ValidTransmittion : public Entradas {
+public:
+    ValidTransmittion(int pino);
+    void setEstado(bool estado);
 };
 
 #endif

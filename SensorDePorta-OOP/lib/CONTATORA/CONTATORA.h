@@ -4,16 +4,12 @@
 #include <Arduino.h>
 #include "ATUADORES.h"
 
-class Contatora : public Atuador
-{
-    protected:
-        unsigned long tempoAntigo;
-        unsigned long intervalo;
+class Contatora : public Atuador {
+public:
+    Contatora(int pino);
 
-    public:
-        Contatora(int pino);
-        void ligarAtuador(unsigned long tempoAtual, unsigned long &tempoAntigo, unsigned long intervalo) override;
-        void desligarAtuador(unsigned long tempoAtual, unsigned long &tempoAntigo, unsigned long intervalo) override;
+    void ligarAtuador(unsigned long tempoAtual) override;
+    void desligarAtuador(unsigned long tempoAtual) override;
 };
 
 #endif

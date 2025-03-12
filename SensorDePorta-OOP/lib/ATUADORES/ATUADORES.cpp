@@ -1,19 +1,29 @@
-#include <Arduino.h>
 #include "ATUADORES.h"
 
-Atuador::Atuador(int pino)
-{
+Atuador::Atuador(int pino) {
     this->pino = pino;
     this->estado = LOW;
+    this->tempoAntigo = 0; // Inicializa o tempo antigo
+    this->intervalo = 0;   // Inicializa o intervalo
     pinMode(this->pino, OUTPUT);
 }
 
-bool Atuador::getEstado()
-{
+bool Atuador::getEstado() {
     return this->estado;
 }
 
-void trocaTempo(unsigned long &tempoAntigo, unsigned long tempoAtual)
-{
-    tempoAntigo = tempoAtual;
+void Atuador::setTempoAntigo(unsigned long tempoAntigo) {
+    this->tempoAntigo = tempoAntigo;
+}
+
+unsigned long Atuador::getTempoDecorrido(unsigned long tempoAtual) {
+    return tempoAtual - this->tempoAntigo;
+}
+
+void Atuador::setIntervalo(unsigned long intervalo) {
+    this->intervalo = intervalo;
+}
+
+unsigned long Atuador::getIntervalo() {
+    return this->intervalo;
 }

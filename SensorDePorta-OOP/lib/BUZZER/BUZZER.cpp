@@ -1,30 +1,23 @@
-#include <Arduino.h>
 #include "BUZZER.h"
-#include "ATUADORES.h"
 
-Buzzer::Buzzer(int pino):Atuador(pino){
-    this->tempoAntigo = 0;
-    this->intervalo = 0;
-}
+Buzzer::Buzzer(int pino) : Atuador(pino) {}
 
-void Buzzer::ligarAtuador(unsigned long tempoAtual, unsigned long &tempoAntigo, unsigned long intervalo) {
-   
-    unsigned long tempoDecorrido = tempoAtual - tempoAntigo;
+void Buzzer::ligarAtuador(unsigned long tempoAtual) {
+    unsigned long tempoDecorrido = getTempoDecorrido(tempoAtual);
 
-    if (tempoDecorrido >= intervalo && this->getEstado() == LOW) {
+    if (tempoDecorrido >= this->getIntervalo() && this->getEstado() == LOW) {
         this->estado = HIGH;
         digitalWrite(this->pino, this->estado);
-        tempoAntigo = tempoAtual;
+        setTempoAntigo(tempoAtual); // Atualiza o tempo antigo
     }
 }
 
-void Buzzer::desligarAtuador(unsigned long tempoAtual, unsigned long &tempoAntigo, unsigned long intervalo) {
-    
-    unsigned long tempoDecorrido = tempoAtual - tempoAntigo;
+void Buzzer::desligarAtuador(unsigned long tempoAtual) {
+    unsigned long tempoDecorrido = getTempoDecorrido(tempoAtual);
 
-    if (tempoDecorrido >= intervalo && this->getEstado() == HIGH) {
+    if (tempoDecorrido >= this->getIntervalo() && this->getEstado() == HIGH) {
         this->estado = LOW;
         digitalWrite(this->pino, this->estado);
-        tempoAntigo = tempoAtual;
+        setTempoAntigo(tempoAtual); // Atualiza o tempo antigo
     }
 }
