@@ -1,4 +1,0 @@
-[wokwi]
-version = 1
-firmware = 'https://github.com/Fluxo-MNP/SensorDePorta/raw/main/SensorDePorta-OOP/firmware.hex'
-elf = 'https://github.com/Fluxo-MNP/SensorDePorta/raw/main/SensorDePorta-OOP/firmware.elf'
