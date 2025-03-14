@@ -12,4 +12,5 @@ public:
     void desligarAtuador(unsigned long tempoAtual) override;
 };
 
+
 #endif

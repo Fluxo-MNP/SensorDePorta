@@ -34,3 +34,7 @@ unsigned long Atuador::getIntervalo()
 {
     return this->intervalo;
 }
+
+unsigned long Atuador::getDiferencaTempo(unsigned long tempoAtual){
+    return tempoAtual - this->tempoAntigo; 
+}

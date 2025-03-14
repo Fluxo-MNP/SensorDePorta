@@ -25,6 +25,7 @@ public:
     // Métodos para definir e obter o intervalo
     void setIntervalo(unsigned long intervalo);
     unsigned long getIntervalo();
+    unsigned long getDiferencaTempo(unsigned long tempoAtual);
 };
 
 
