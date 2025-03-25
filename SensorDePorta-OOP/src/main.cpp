@@ -6,13 +6,13 @@
 #include "ENTRADAS.h"
 
 // Definição dos pinos
-#define pinLedAzul 0
-#define pinLedLaranja 1
-#define pinLedBranco 2
-#define pinValidTransmittion 3
-#define pinSensorToque 4
-#define pinBuzzer 5
-#define pinMosfet 6
+#define pinLedAzul 3
+#define pinLedLaranja 2
+#define pinLedBranco 0
+#define pinValidTransmittion 5
+#define pinSensorToque 6
+#define pinBuzzer 10
+#define pinMosfet 9
 
 // Instâncias das classes
 Leds ledLaranja(pinLedLaranja);
@@ -20,31 +20,35 @@ Leds ledBranco(pinLedBranco);
 Leds ledAzul(pinLedAzul);
 Buzzer buzzer(pinBuzzer);
 Contatora mosfet(pinMosfet);
-Entradas vt(pinValidTransmittion);
+// Entradas vt(pinValidTransmittion);
 Entradas sensorToque(pinSensorToque);
 
 // Variáveis de controle
+
 unsigned long tempoAntigo = 0;           // contador geral
 unsigned long tempoAntigoBuzzer = 0;     // contador do buzzer
 unsigned long tempoAntigoLedBranco = 0;  // contador do LED branco
 unsigned long tempoAntigoLedAzul = 0;    // contador do LED azul
 unsigned long tempoAntigoLedLaranja = 0; // contador do LED laranja
-unsigned long tempoAtual = millis();
 bool estaContando = false;   // variável que verifica se a contagem está acontecendo
 bool placaFoiTocada = false; // variável que verifica se a contagem está acontecendo
+
 
 void setup()
 {
     Serial.begin(9600);
-    ledLaranja.desligarAtuador(tempoAtual);
-    ledBranco.desligarAtuador(tempoAtual);
-    ledAzul.desligarAtuador(tempoAtual);
+    pinMode(pinValidTransmittion, INPUT_PULLUP);
+
+    // ledLaranja.desligarAtuador(tempoAtual);
+    // ledBranco.desligarAtuador(tempoAtual);
+    // ledAzul.desligarAtuador(tempoAtual);
 }
 
 void loop()
 {
-    // Verifica se o sinal VT foi recebido e inicia a contagem
-    if (vt.getEstado() == HIGH && !estaContando)
+    unsigned long tempoAtual = millis();
+    
+    if (digitalRead(pinValidTransmittion) == 1 && !estaContando)
     {
         buzzer.ligarAtuador(tempoAtual);    // Liga o buzzer imediatamente
         ledBranco.ligarAtuador(tempoAtual); // Liga o LED branco
@@ -58,8 +62,9 @@ void loop()
 
     if (estaContando)
     {
+
         // Verifica se o sensor de toque foi ativado
-        if (sensorToque.getEstado() == HIGH)
+        if (sensorToque.getEstado() == 1)
         {
             placaFoiTocada = true;
             ledBranco.desligarAtuador(tempoAtual);  // Desliga o LED branco
@@ -75,8 +80,9 @@ void loop()
         }
 
         // Verifica se passou 1 minuto (60000 ms) e a placa não foi tocada
-        if (tempoAtual - tempoAntigo >= 60000 && !placaFoiTocada)
+        if (tempoAtual - tempoAntigo >= 20000 && !placaFoiTocada)
         {
+            mosfet.desligarAtuador(tempoAtual); // Desliga o MOSFET LOUCURA MINHA
             // Pisca o LED laranja uma vez por segundo durante 10 segundos
             if (ledLaranja.getDiferencaTempo(tempoAtual) >= 1000)
             {
